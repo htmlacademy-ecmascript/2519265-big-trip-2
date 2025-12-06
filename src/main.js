@@ -6,7 +6,7 @@ const filtersContainer = document.querySelector('.trip-controls__filters');
 const siteMainElement = document.querySelector('.trip-events');
 const boardPresenter = new BoardPresenter({boardContainer: siteMainElement});
 
-render(new FiltersView, filtersContainer);
+render(new FiltersView(), filtersContainer);
 
 boardPresenter.init();
 
