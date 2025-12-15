@@ -1,6 +1,88 @@
+import { DAY_FORMAT } from '../const';
 import { createElement } from '../render';
+import humanizeDueDay from '../utils';
 
-function createEditPointTemplate() {
+function createEventTypeTemplate(points, point) {
+
+  const getType = (type, checked) => (`<div class="event__type-item">
+            <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value=${type} ${checked}>
+            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+          </div>`);
+  const pointsList = points.map(({ type }) => {
+    const checked = (type === point.type) ? 'checked' : '';
+    getType(type, checked);
+  });
+
+  return pointsList.join('');
+}
+
+function createDestinationListTemplate(destinations) {
+  const destinationsList = destinations.map(({ name }) => (`<option value=${name}></option>`));
+  return `<datalist id="destination-list-1">${destinationsList.join('')}</datalist>`;
+}
+
+function createOfferTemplate(point, offers, type, offersOfPoint) {
+  function getOfferTemplate({ id, title, price } = offers) {
+    const checked = point.offers.find((item) => item === id) ? 'checked' : '';
+
+    return (
+      `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" ${checked}>
+          <label class="event__offer-label" for="event-offer-comfort-1">
+            <span class="event__offer-title">${title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${price}</span>
+          </label>
+        </div>`
+    );
+
+  }
+
+  if (offersOfPoint.length <= 0) {
+    return '';
+  } else {
+
+
+    for (const offersWithType of offers) {
+      if (offersWithType.type === type) {
+        const list = offersWithType.offers.map(({ id, title, price }) => getOfferTemplate({ id, title, price }));
+
+        return (`<section class="event__section  event__section--offers">
+            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+            <div class="event__available-offers">
+            ${list.join('')}
+            </div>
+          </section>`);
+      }
+    }
+  }
+}
+
+function createPicturesOfDestinations(pictures) {
+
+  function getPictureTemplate({ src, description }) {
+    return (`<img class="event__photo" src=${src} alt=${description}>`);
+  }
+
+  if (pictures) {
+    const list = pictures.map(({ src, description }) => getPictureTemplate({ src, description }));
+
+    return (
+      `<div class="event__photos-container">
+        <div class="event__photos-tape">
+        ${list.join('')}
+        </div>
+      </div>`
+    );
+  } else {
+    return '';
+  }
+}
+
+function createEditPointTemplate(points, offers, destinations, point, offersOfPoint, destinationOfPoint) {
+  const { basePrice, dateFrom, dateTo, type } = point;
+  const { description, name, pictures } = destinationOfPoint;
+
   return (
     `<li class="trip-events__item">
       <form class="event event--edit" action="#" method="post">
@@ -15,73 +97,27 @@ function createEditPointTemplate() {
             <div class="event__type-list">
               <fieldset class="event__type-group">
                 <legend class="visually-hidden">Event type</legend>
-
-                <div class="event__type-item">
-                  <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                  <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                  <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                  <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                  <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                  <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                  <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                  <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                  <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                </div>
-
-                <div class="event__type-item">
-                  <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                  <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                </div>
+                ${createEventTypeTemplate(points, point)}
               </fieldset>
             </div>
           </div>
 
           <div class="event__field-group  event__field-group--destination">
             <label class="event__label  event__type-output" for="event-destination-1">
-              Flight
+              ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="Chamonix" list="destination-list-1">
-            <datalist id="destination-list-1">
-              <option value="Amsterdam"></option>
-              <option value="Geneva"></option>
-              <option value="Chamonix"></option>
-            </datalist>
+              <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value=${name} list="destination-list-1">
+
+              ${createDestinationListTemplate(destinations)}
+
           </div>
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="18/03/19 12:25">
+            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value=${humanizeDueDay(dateFrom, DAY_FORMAT.getDateWithSlash)}${humanizeDueDay(dateFrom, DAY_FORMAT.getTime)}>
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="18/03/19 13:35">
+            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${humanizeDueDay(dateTo, DAY_FORMAT.getDateWithSlash) + humanizeDueDay(dateTo, DAY_FORMAT.getTime)}>
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -89,7 +125,7 @@ function createEditPointTemplate() {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="160">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -99,60 +135,12 @@ function createEditPointTemplate() {
           </button>
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-            <div class="event__available-offers">
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" checked>
-                <label class="event__offer-label" for="event-offer-luggage-1">
-                  <span class="event__offer-title">Add luggage</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">50</span>
-                </label>
-              </div>
-
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-1" type="checkbox" name="event-offer-comfort" checked>
-                <label class="event__offer-label" for="event-offer-comfort-1">
-                  <span class="event__offer-title">Switch to comfort</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">80</span>
-                </label>
-              </div>
-
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-meal-1" type="checkbox" name="event-offer-meal">
-                <label class="event__offer-label" for="event-offer-meal-1">
-                  <span class="event__offer-title">Add meal</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">15</span>
-                </label>
-              </div>
-
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-seats-1" type="checkbox" name="event-offer-seats">
-                <label class="event__offer-label" for="event-offer-seats-1">
-                  <span class="event__offer-title">Choose seats</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">5</span>
-                </label>
-              </div>
-
-              <div class="event__offer-selector">
-                <input class="event__offer-checkbox  visually-hidden" id="event-offer-train-1" type="checkbox" name="event-offer-train">
-                <label class="event__offer-label" for="event-offer-train-1">
-                  <span class="event__offer-title">Travel by train</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">40</span>
-                </label>
-              </div>
-            </div>
-          </section>
+         ${createOfferTemplate(point, offers, type, offersOfPoint)}
 
           <section class="event__section  event__section--destination">
             <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">Chamonix-Mont-Blanc (usually shortened to Chamonix) is a resort area near the junction of France, Switzerland and Italy. At the base of Mont Blanc, the highest summit in the Alps, it's renowned for its skiing.</p>
+            <p class="event__destination-description">${description}</p>
+            ${createPicturesOfDestinations(pictures)}
           </section>
         </section>
       </form>
@@ -161,12 +149,22 @@ function createEditPointTemplate() {
 }
 
 export default class EditPointView {
+
+  constructor({ points }, { offers }, { destinations }, { point }, { offersOfPoint }, { destinationOfPoint }) {
+    this.points = points;
+    this.offers = offers;
+    this.destinations = destinations;
+    this.point = point;
+    this.offersOfPoint = offersOfPoint;
+    this.destinationOfPoint = destinationOfPoint;
+  }
+
   getTemplate() {
-    return createEditPointTemplate;
+    return createEditPointTemplate(this.points, this.offers, this.destinations, this.point, this.offersOfPoint, this.destinationOfPoint);
   }
 
   getElement() {
-    if(!this.element) {
+    if (!this.element) {
       this.element = createElement(this.getTemplate());
     }
 
