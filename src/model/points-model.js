@@ -1,13 +1,10 @@
-import { getRandomPoint } from '../mocks/points';
 import { offers } from '../mocks/offers';
 import { destinations } from '../mocks/destinations';
-
-
-const POINT_COUNT = 5;
+import {points} from '../mocks/points';
 
 export default class PointsModel {
 
-  points = Array.from({length:POINT_COUNT}, getRandomPoint);
+  points = points;
   offers = offers.slice();
   destinations = destinations.slice();
 

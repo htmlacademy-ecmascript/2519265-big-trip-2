@@ -12,6 +12,12 @@ export function differentTime(dateStart, dateEnd) {
   return dayjs(dateEnd).diff(dayjs(dateStart), 'minute');
 }
 
+export function getDateWithTime (date, time) {
+  const space = '&nbsp;';
+
+  return date + space + time;
+}
+
 export function getTotalTime(date) {
   let minutes = '';
   let hours = '';
@@ -19,13 +25,16 @@ export function getTotalTime(date) {
 
   if(date > MINUTES_IN_DAY) {
     days = Math.floor(date / MINUTES_IN_DAY);
+    days = String(days).padStart(2, '0');
   }
   if(date > MINUTES_IN_DAY) {
-    hours = Math.floor(date / MINUTES_IN_HOUR);
+    hours = Math.floor((date - days * MINUTES_IN_DAY) / MINUTES_IN_HOUR);
+    hours = String(hours).padStart(2, '0');
   }
   if(date > MINUTES_IN_HOUR) {
     minutes = date - (Math.floor(date / MINUTES_IN_HOUR) * MINUTES_IN_HOUR);
+    minutes = String(minutes).padStart(2, '0');
   }
-  return (`${days > 0 ? ` ${days}D` : ''} ${hours > 0 ? ` ${hours}H` : ''} ${minutes > 0 ? ` ${minutes}m` : ''}`);
+  return (`${days > 0 ? ` ${days}D` : ''} ${hours}H ${minutes}M`);
 }
 
