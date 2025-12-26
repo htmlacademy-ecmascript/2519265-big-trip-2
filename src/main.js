@@ -1,5 +1,5 @@
 import FiltersView from './view/filters-view';
-import { render } from './render';
+import { render } from './framework/render.js';
 import BoardPresenter from './presenter/board-presenter';
 import PointsModel from './model/points-model';
 
@@ -11,7 +11,3 @@ const boardPresenter = new BoardPresenter({boardContainer: siteMainElement}, poi
 render(new FiltersView(), filtersContainer);
 
 boardPresenter.init();
-
-// console.log(pointsConst.getDestination());
-// console.log(points)
-

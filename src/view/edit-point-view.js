@@ -1,5 +1,6 @@
 import { DAY_FORMAT } from '../const';
-import { createElement } from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
+// import { createElement } from '../render';
 import humanizeDueDay from '../utils';
 import {getDateWithTime} from '../utils.js';
 
@@ -69,6 +70,8 @@ function createOfferTemplate(offersOfPoint = [], offers, pointId) {
             ${list.join('')}
             </div>
           </section>`);
+  } else {
+    return '';
   }
 }
 
@@ -94,13 +97,13 @@ function createPicturesOfDestinations(pictures) {
 }
 
 function createButtonCloseOrDelete(point) {
-  if (point.name) {
-    return (
-      '<button class="event__reset-btn" type="reset">Delete</button>'
-    );
-  } else {
+  if (!point.type) {
     return (
       '<button class="event__reset-btn" type="reset">Cancel</button>'
+    );
+  }else {
+    return (
+      '<button class="event__reset-btn" type="reset">Delete</button>'
     );
   }
 }
@@ -170,29 +173,42 @@ function createEditPointTemplate(points, offers, destinations, point, destinatio
   );
 }
 
-export default class EditPointView {
+export default class EditPointView extends AbstractView {
+  #points = null;
+  #offers = null;
+  #destinations = null;
+  #point = null;
+  #destinationOfPoint = null;
+  #handleFormSubmit = null;
+  #handleEditClick = null;
 
-  constructor({ points }, { offers }, { destinations }, { point } = {}, { destinationOfPoint } = {}) {
-    this.points = points;
-    this.offers = offers;
-    this.destinations = destinations;
-    this.point = point || {};
-    this.destinationOfPoint = destinationOfPoint || {};
+  constructor({points, offers, destinations, point = {}, destinationOfPoint = {}, onFormSubmit, onEditClick}) {
+    super();
+
+    this.#points = points;
+    this.#offers = offers;
+    this.#destinations = destinations;
+    this.#point = point || {};
+    this.#destinationOfPoint = destinationOfPoint || {};
+
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
   }
 
-  getTemplate() {
-    return createEditPointTemplate(this.points, this.offers, this.destinations, this.point, this.destinationOfPoint);
+  get template() {
+    return createEditPointTemplate(this.#points, this.#offers, this.#destinations, this.#point, this.#destinationOfPoint);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }
