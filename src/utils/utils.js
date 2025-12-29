@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { MINUTES_IN_HOUR } from '../const.js';
+import { dateNow, MINUTES_IN_HOUR } from '../const.js';
 import { MINUTES_IN_DAY } from '../const.js';
 
 export const getRundomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
@@ -18,16 +18,16 @@ export function getDateWithTime(date, time) {
   return date + space + time;
 }
 
-export function isPointFuture(dueDate) {
-  return dueDate && dayjs().isBefore(dayjs(dueDate), 'D');
+export function isPointFuture(dateStart) {
+  return dateStart && dayjs().isBefore(dayjs(dateStart));
 }
 
-export function isPointExpiringToday(dueDate) {
-  return dueDate && dayjs().isSame(dayjs(dueDate), 'D');
+export function isPointExpiringToday(dateStart, dateEnd) {
+  return (dateStart && (new Date(dateStart).getTime() <= dateNow.getTime()) && (dateEnd && (new Date(dateEnd).getTime() >= dateNow.getTime())));
 }
 
-export function isPointExpired(dueDate) {
-  return dueDate && dayjs().isAfter(dayjs(dueDate), 'D');
+export function isPointExpired(dateEnd) {
+  return dateEnd && dayjs().isAfter(dayjs(dateEnd));
 }
 
 export function getTotalTime(date) {

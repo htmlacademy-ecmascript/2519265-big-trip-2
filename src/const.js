@@ -17,3 +17,5 @@ export const FilterType = {
 export const MINUTES_IN_HOUR = 60;
 
 export const MINUTES_IN_DAY = 1440;
+
+export const dateNow = new Date();

@@ -1,10 +1,8 @@
-import { DAY_FORMAT } from '../const';
+import { DAY_FORMAT, dateNow } from '../const';
 import AbstractView from '../framework/view/abstract-view.js';
 // import { createElement } from '../render';
 import humanizedueDate from '../utils/utils.js';
 import {getDateWithTime} from '../utils/utils.js';
-
-const dateNow = new Date();
 
 function createEventTypeTemplate(points, pointType = '', id) {
 
