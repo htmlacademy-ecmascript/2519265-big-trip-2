@@ -51,3 +51,7 @@ export function getTotalTime(date) {
   return (`${days > 0 ? ` ${days}D` : ''} ${hours}H ${minutes}M`);
 }
 
+export function updateItem(items, update) {
+  return items.map((item) => item.id === update.id ? update : item);
+}
+

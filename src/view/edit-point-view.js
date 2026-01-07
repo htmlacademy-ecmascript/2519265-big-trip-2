@@ -1,6 +1,5 @@
 import { DAY_FORMAT, dateNow } from '../const';
 import AbstractView from '../framework/view/abstract-view.js';
-// import { createElement } from '../render';
 import humanizedueDate from '../utils/utils.js';
 import {getDateWithTime} from '../utils/utils.js';
 
@@ -177,20 +176,24 @@ export default class EditPointView extends AbstractView {
   #destinations = null;
   #point = null;
   #destinationOfPoint = null;
+  #pointsOfOffersAll = [];
   #handleFormSubmit = null;
   #handleEditClick = null;
+  #handleEditClickClose = null;
 
-  constructor({points, offers, destinations, point, destinationOfPoint, onFormSubmit, onEditClick}) {
+  constructor({point, offers, destination, destinations, pointOffersAll, points, onFormSubmit, onEditClick, onEditClickClose}) {
     super();
-
+    this.#point = point;
     this.#points = points;
     this.#offers = offers;
     this.#destinations = destinations;
     this.#point = point || {};
-    this.#destinationOfPoint = destinationOfPoint || {};
+    this.#destinationOfPoint = destination || '';
+    this.#pointsOfOffersAll = pointOffersAll;
 
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
+    this.#handleEditClickClose = onEditClickClose;
 
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
     this.element.querySelector('.event--edit').addEventListener('submit', this.#formSubmitHandler);
@@ -207,6 +210,6 @@ export default class EditPointView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(this.#point);
   };
 }
