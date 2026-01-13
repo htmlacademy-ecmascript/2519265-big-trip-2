@@ -55,3 +55,15 @@ export function updateItem(items, update) {
   return items.map((item) => item.id === update.id ? update : item);
 }
 
+export function sortDayOfPointUp(pointA, pointB) {
+
+  const pointAFullTime = differentTime(pointA.dateFrom, pointA.dateTo);
+  const pointBFullTime = differentTime(pointB.dateFrom, pointB.dateTo);
+
+  return (pointBFullTime - pointAFullTime);
+}
+
+export function sortPriceDown(pointA, pointB) {
+  return pointB.basePrice - pointA.basePrice;
+}
+
