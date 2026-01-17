@@ -13,7 +13,7 @@ export default class BoardPresenter {
   #sortComponent = null;
   #tripPointsList = new TripPointsListView();
 
-  #boardPoints = [];
+  // #boardPoints = [];
   #noPointsComponent = null;
   #boardOffers = null;
   #boardDestinations = [];
@@ -27,12 +27,30 @@ export default class BoardPresenter {
     this.#boardContainer = boardContainer;
   }
 
+  get points() {
+    switch (this.#currentSortType) {
+      case SortType.TIME:
+        return [...this.#pointsModel.points].sort(sortDayOfPointUp);
+      case SortType.PRICE:
+        return [...this.#pointsModel.points].sort(sortPriceDown);
+    }
+    return this.#pointsModel.points;
+  }
+
+  get destinations() {
+    return this.#pointsModel.destinations;
+  }
+
+  get offers() {
+    return this.#pointsModel.offers;
+  }
+
   init() {
-    this.#boardPoints = [...this.#pointsModel.points];
+    // this.#boardPoints = [...this.#pointsModel.points];
     this.#boardDestinations = [...this.#pointsModel.destinations];
     this.#boardOffers = [...this.#pointsModel.offers];
     this.#sourcedBoardPoints = [...this.#pointsModel.points];
-
+console.log(this.points)
     this.#renderBoard();
   }
 
@@ -41,7 +59,7 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#sortPoints(sortType);
+    this.#currentSortType = sortType;
     this.#clearTripPresenters();
     this.#renderPoints();
   };
@@ -57,12 +75,12 @@ export default class BoardPresenter {
 
   #renderBoard() {
 
-    if (this.#boardPoints.length === 0) {
+    if (this.points.length === 0) {
       this.#renderNoPoint();
       return;
     }
 
-    if (this.#boardPoints.length > 0) {
+    if (this.points.length > 0) {
       render(this.#tripPointsList, this.#boardContainer);
 
       this.#renderSort();
@@ -78,7 +96,7 @@ export default class BoardPresenter {
       onModeChange: this.#handleModeChange
     });
 
-    pointPresenter.init(point, this.#boardOffers, this.#boardDestinations, this.#boardPoints);
+    pointPresenter.init(point, this.#boardOffers, this.#boardDestinations, this.points);
 
     this.#pointPresenters.set(point.id, pointPresenter);
   }
@@ -89,7 +107,7 @@ export default class BoardPresenter {
   }
 
   #renderPoints() {
-    this.#boardPoints.forEach((point) => this.#renderPoint(point));
+    this.points.forEach((point) => this.#renderPoint(point));
   }
 
   #clearTripPresenters() {
@@ -98,28 +116,13 @@ export default class BoardPresenter {
   }
 
   #handlePointChange = (updatedPoint) => {
-    this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
-    this.#sourcedBoardPoints = updateItem(this.#sourcedBoardPoints, updatedPoint);
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#boardOffers, this.#boardDestinations, this.#boardPoints);
+    // this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    // this.#sourcedBoardPoints = updateItem(this.#sourcedBoardPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint, this.#boardOffers, this.#boardDestinations, this.tasks);
   };
 
   #handleModeChange = () => {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
 
   };
-
-  #sortPoints(sortType) {
-    switch (sortType) {
-      case SortType.TIME:
-        this.#boardPoints.sort(sortDayOfPointUp);
-        break;
-      case SortType.PRICE:
-        this.#boardPoints.sort(sortPriceDown);
-        break;
-      default:
-        this.#boardPoints = [...this.#sourcedBoardPoints];
-    }
-    this.#currentSortType = sortType;
-  }
-
 }

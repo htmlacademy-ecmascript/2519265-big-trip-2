@@ -44,6 +44,8 @@ export default class PointPresenter {
     this.#offersOfPointAll = (this.#offersAll.find((item) => this.type === item.type)).offers;
     this.#offersOfPoint = this.#offersOfPointAll.filter((item) => this.#point.offers.includes(item.id));
 
+    console.log(this.#points)
+
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
