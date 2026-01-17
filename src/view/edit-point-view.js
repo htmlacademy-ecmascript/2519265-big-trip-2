@@ -22,11 +22,10 @@ function createEventTypeTemplate(points, pointType = '', id) {
 
 function createDestinationListTemplate(destinations) {
   if (destinations) {
-    const destinationsList = destinations.map(({ name }) => (`<option value=${name}></option>`));
+    const destinationsList = destinations.map(({ id, name }) => (`<option id=${id} value=${name}></option>`));
     return `<datalist id="destination-list-1">${destinationsList.join('')}</datalist>`;
-  } else {
-    return '';
   }
+  return '';
 }
 
 function createDestinationOfPoint(pictures, description) {
@@ -38,9 +37,8 @@ function createDestinationOfPoint(pictures, description) {
           ${createPicturesOfDestinations(pictures)}
         </section>`
     );
-  } else {
-    return '';
   }
+  return '';
 }
 
 function createOfferTemplate(offersOfPoint = [], offers, pointId) {
@@ -70,9 +68,8 @@ function createOfferTemplate(offersOfPoint = [], offers, pointId) {
               ${list.join('')}
             </div>
           </section>`);
-  } else {
-    return '';
   }
+  return '';
 }
 
 function createPicturesOfDestinations(pictures) {
@@ -89,32 +86,19 @@ function createPicturesOfDestinations(pictures) {
         <div class="event__photos-tape">${list.join('')}</div>
       </div> `
     );
-  } else {
-    return '';
   }
+  return '';
 }
 
 function createButtonCloseOrDelete(point) {
-  if (!point.type) {
-    return (
-      '<button class="event__reset-btn" type="reset">Cancel</button>'
-    );
-  } else {
-    return (
-      '<button class="event__reset-btn" type="reset">Delete</button>'
-    );
-  }
+  return (
+    `<button class="event__reset-btn" type="reset">${!point.type ? 'Cancel' : 'Delete'}</button>`
+  );
 }
 
 function createEditPointTemplate(points, offersAll, destinations, point) {
-  let destinationOfPoint = null;
-  if (point.isDestination) {
-    destinationOfPoint = (destinations.find((item) => point.isDestination === item.name));
-  } else {
-    destinationOfPoint = (destinations.find((item) => point.destination === item.id));
-  }
 
-
+  const destinationOfPoint = (destinations.find((item) => point.destination === item.id));
   const { id = 1, basePrice = '', dateFrom = dateNow, dateTo = dateNow, type = points[0].type } = point;
   const offers = (offersAll.find((item) => type === item.type)).offers;
   const { description = '', name, pictures } = destinationOfPoint;
@@ -171,7 +155,7 @@ function createEditPointTemplate(points, offersAll, destinations, point) {
             </button>
           </header>
           ${(offers.length > 0) || ((description !== '') || (pictures.length > 0)) ? `<section class="event__details">
-            ${point.isType ? createOfferTemplate(point.offers, offers, id) : ''}
+            ${createOfferTemplate(point.offers, offers, id)}
             ${createDestinationOfPoint(pictures, description)}
           </section>` : ''}
         </form>
@@ -272,16 +256,20 @@ export default class EditPointView extends AbstractStatefulView {
 
   #offersClickHandler = (evt) => {
     evt.preventDefault();
+
     this.updateElement({
-      isType: evt.target.value,
       type: evt.target.value,
     });
   };
 
   #destinationClickHandler = (evt) => {
     evt.preventDefault();
+
+    const value = evt.target.value.trim();
+    const descriptionId = (this.#destinations.find((item) => value === item.name)).id;
+
     this.updateElement({
-      isDestination: evt.target.value,
+      destination: descriptionId,
     });
   };
 
@@ -300,7 +288,7 @@ export default class EditPointView extends AbstractStatefulView {
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateFrom,
           enableTime: true,
-          onChange: this.#dateFromChangeHandler,
+          onClose: this.#dateFromChangeHandler,
         }
       );
     }
@@ -315,7 +303,7 @@ export default class EditPointView extends AbstractStatefulView {
           defaultDate: this._state.dateTo,
           enableTime: true,
           minDate: this._state.dateFrom,
-          onChange: this.#dateToChangeHandler,
+          onClose: this.#dateToChangeHandler,
         }
       );
     }
@@ -324,20 +312,11 @@ export default class EditPointView extends AbstractStatefulView {
   static parsePointToState(point) {
     return {
       ...point,
-      isType: point.type,
-      isDestination: null,
     };
   }
 
   static parseStateToPoint(state) {
     const point = { ...state };
-
-    if (!point.isType) {
-      point.offers = null;
-    }
-
-    delete point.isType;
-    delete point.isDestination;
 
     return point;
   }
