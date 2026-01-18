@@ -1,4 +1,6 @@
+import { UpdateType, UserAction } from '../const';
 import { remove, render, replace } from '../framework/render';
+import { isDateEqual } from '../utils/utils';
 import EditPointView from '../view/edit-point-view';
 import TripPointView from '../view/trip-point-view';
 
@@ -44,8 +46,6 @@ export default class PointPresenter {
     this.#offersOfPointAll = (this.#offersAll.find((item) => this.type === item.type)).offers;
     this.#offersOfPoint = this.#offersOfPointAll.filter((item) => this.#point.offers.includes(item.id));
 
-    console.log(this.#points)
-
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
@@ -65,6 +65,7 @@ export default class PointPresenter {
       points: this.#points,
       onFormSubmit: this.#handleFormSubmit,
       onEditClick: this.#handleEditClickClose,
+      onDeleteClick: this.#handleDeleteClick,
     });
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -112,12 +113,38 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({ ...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#handleDataChange(
+      UserAction.UPDATE_TASK,
+      UpdateType.MINOR,
+      { ...this.#point, isFavorite: !this.#point.isFavorite },
+    );
   };
 
   #handleFormSubmit = (point) => {
-    this.#handleDataChange(point);
+    const isMinorUpdate =
+      !isDateEqual(this.#point.dateFrom, UpdateType.dateFrom) ||
+      !isDateEqual(this.#point.dateFrom, UpdateType.dateFrom) ||
+      (this.#point.basePrice !== UpdateType.basePrice);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UserAction.MINOR : UserAction.PATCH,
+      point
+    );
+
     this.#replaceFormToCard();
+
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+
+    this.#replaceFormToCard();
+
   };
 
   #replaceCardToForm() {
