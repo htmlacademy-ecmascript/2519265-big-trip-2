@@ -1,4 +1,6 @@
+import { UpdateType, UserAction } from '../const';
 import { remove, render, replace } from '../framework/render';
+import { isDateEqual } from '../utils/utils';
 import EditPointView from '../view/edit-point-view';
 import TripPointView from '../view/trip-point-view';
 
@@ -36,13 +38,18 @@ export default class PointPresenter {
 
     this.#point = point;
 
-    this.#offersAll = offers;
-    this.#destinations = destinations;
     this.#points = points;
     this.type = point.type;
+
+    this.#destinations = destinations;
     this.#destination = this.#destinations.find((item) => this.#point.destination === item.id);
-    this.#offersOfPointAll = (this.#offersAll.find((item) => this.type === item.type)).offers;
-    this.#offersOfPoint = this.#offersOfPointAll.filter((item) => this.#point.offers.includes(item.id));
+
+    if (offers.length > 0) {
+      this.#offersAll = offers;
+      this.#offersOfPointAll = (this.#offersAll.find((item) => this.type === item.type)).offers;
+      this.#offersOfPoint = this.#offersOfPointAll.filter((item) => this.#point.offers.includes(item.id));
+    }
+
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
@@ -58,12 +65,13 @@ export default class PointPresenter {
     this.#pointEditComponent = new EditPointView({
       point: this.#point,
       offers: this.#offersAll,
-      offersOfPointAll: this.#offersOfPointAll,
       destinations: this.#destinations,
       points: this.#points,
       onFormSubmit: this.#handleFormSubmit,
       onEditClick: this.#handleEditClickClose,
+      onDeleteClick: this.#handleDeleteClick,
     });
+
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
       render(this.#pointComponent, this.#pointListContainer);
@@ -110,12 +118,35 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({ ...this.#point, isFavorite: !this.#point.isFavorite });
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      { ...this.#point, isFavorite: !this.#point.isFavorite },
+    );
   };
 
   #handleFormSubmit = (point) => {
-    this.#handleDataChange(point);
+    const isMinorUpdate =
+      !isDateEqual(this.#point.dateFrom, UpdateType.dateFrom) ||
+      !isDateEqual(this.#point.dateFrom, UpdateType.dateFrom) ||
+      (this.#point.basePrice !== UpdateType.basePrice);
+
+    this.#handleDataChange(
+      UserAction.UPDATE_POINT,
+      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+      point,
+    );
+
     this.#replaceFormToCard();
+
+  };
+
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
   };
 
   #replaceCardToForm() {

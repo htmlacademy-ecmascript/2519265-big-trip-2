@@ -48,11 +48,7 @@ export function getTotalTime(date) {
   minutes = date - ((days * MINUTES_IN_DAY) + (hours * MINUTES_IN_HOUR));
   minutes = String(minutes).padStart(2, '0');
 
-  return (`${days > 0 ? ` ${days}D` : ''} ${hours}H ${minutes}M`);
-}
-
-export function updateItem(items, update) {
-  return items.map((item) => item.id === update.id ? update : item);
+  return (`${days > 0 ? ` ${days}D` : ''} ${hours > 0 ? ` ${hours}H` : ''} ${minutes}M`);
 }
 
 export function sortDayOfPointUp(pointA, pointB) {
@@ -67,3 +63,6 @@ export function sortPriceDown(pointA, pointB) {
   return pointB.basePrice - pointA.basePrice;
 }
 
+export function isDateEqual(dateA, dateB) {
+  return ((dateA === null && dateB === null) || dayjs(dateA).isSame(dateB));
+}

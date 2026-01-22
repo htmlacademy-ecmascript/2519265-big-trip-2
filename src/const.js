@@ -21,25 +21,27 @@ export const MINUTES_IN_DAY = 1440;
 export const dateNow = new Date();
 
 export const sorts = [
-  {
-    name: 'day',
-  },
-  {
-    name: 'event',
-  },
-  {
-    name: 'time',
-  },
-  {
-    name: 'price',
-  },
-  {
-    name: 'offer',
-  }
+  {name: 'day'},
+  {name: 'event'},
+  {name: 'time'},
+  {name: 'price'},
+  {name: 'offer'}
 ];
 
 export const SortType = {
   DAY: 'day',
   TIME: 'time',
   PRICE: 'price',
+};
+
+export const UserAction = {
+  UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
+  DELETE_POINT: 'DELETE_POINT',
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR',
 };
