@@ -185,7 +185,7 @@ export default class EditPointView extends AbstractStatefulView {
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({ point, offers, destinations, points, onFormSubmit, onEditClick, onDeleteClick }) {
+  constructor({ offers, destinations, points, onFormSubmit, onEditClick, onDeleteClick, point }) {
     super();
     this.#point = point || DEFAULT_POINT;
     this.#points = points;

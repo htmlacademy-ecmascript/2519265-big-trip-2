@@ -1,3 +1,11 @@
+export const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DEIETE',
+
+};
+
 export const DAY_FORMAT = {
   getMonthDay: 'MMM D',
   getTime: 'HH:mm',
@@ -44,4 +52,5 @@ export const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };

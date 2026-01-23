@@ -18,8 +18,9 @@ function createOffersTemplate(offers) {
   }
 }
 
-function createTripPointsTemplate(point, offers, destination) {
+function createTripPointsTemplate(point, offers, destinations) {
   const { type, basePrice, dateFrom, dateTo, isFavorite } = point;
+  const destination = destinations.find((item) => point.destination === item.id);
   const { name } = destination;
 
 
@@ -63,15 +64,16 @@ function createTripPointsTemplate(point, offers, destination) {
 export default class TripPointView extends AbstractView {
   #point = null;
   #offers = null;
-  #destination = null;
+  #destinations = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({ point, offers, destination, onEditClick, onFavoriteClick }) {
+  constructor({ point, offers, destinations, onEditClick, onFavoriteClick }) {
     super();
     this.#point = point;
     this.#offers = offers || '';
-    this.#destination = destination;
+    this.#destinations = destinations;
+
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
@@ -80,7 +82,7 @@ export default class TripPointView extends AbstractView {
   }
 
   get template() {
-    return createTripPointsTemplate(this.#point, this.#offers, this.#destination);
+    return createTripPointsTemplate(this.#point, this.#offers, this.#destinations);
   }
 
   #editClickHandler = (evt) => {
