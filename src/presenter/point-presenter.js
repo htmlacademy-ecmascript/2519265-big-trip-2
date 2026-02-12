@@ -20,7 +20,6 @@ export default class PointPresenter {
 
   #points = null;
   #offersOfPoint = [];
-  #destination = null;
   #destinations = [];
   #offersOfPointAll = [];
   #offersAll = [];
